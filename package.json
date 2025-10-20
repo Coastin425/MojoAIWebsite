@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "export": "next build && next export"
+    "export": "next build && next export",
+    "deploy": "cp CNAME out/ && gh-pages -d out"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "autoprefixer": "^10.4.21",
+    "gh-pages": "^6.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18",
     "typescript": "^5.9.3"
