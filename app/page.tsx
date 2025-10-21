@@ -18,6 +18,10 @@ export default function Home() {
   const [waitlistLoading, setWaitlistLoading] = useState(false);
   const [waitlistSuccess, setWaitlistSuccess] = useState(false);
   const [waitlistError, setWaitlistError] = useState<string | null>(null);
+  // Toast state
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
   const waitlistEndpoint = apiBase ? `${apiBase.replace(/\/$/, '')}/waitlist` : undefined;
@@ -82,6 +86,11 @@ export default function Home() {
       }
       setWaitlistSuccess(true);
       setWaitlistLoading(false);
+      // Show success toast
+      setToastType('success');
+      setToastMessage("You're on the waitlist! 🎉");
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 5000);
     } catch (err: any) {
       if (err?.name === 'AbortError') {
         setWaitlistError('Request timed out. Please retry.');
@@ -89,6 +98,11 @@ export default function Home() {
       setWaitlistError(err.message || 'Unexpected error');
       }
       setWaitlistLoading(false);
+      // Error toast (only if backend reachable attempt was made)
+      setToastType('error');
+      setToastMessage(err?.name === 'AbortError' ? 'Waitlist request timed out.' : (err?.message || 'Waitlist error'));
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 6000);
     }
   };
 
@@ -418,6 +432,46 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      {/* Toast Notification */}
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className="pointer-events-none fixed inset-0 flex flex-col items-center justify-end p-4 sm:p-6 z-[60]"
+      >
+        {toastVisible && toastMessage && (
+          <div
+            role="status"
+            className={`pointer-events-auto mb-2 w-full max-w-sm rounded-xl shadow-2xl border backdrop-blur-sm px-5 py-4 animate-fade-in
+              ${toastType === 'success' ? 'bg-white/90 border-green-300' : 'bg-white/95 border-red-300'}`}
+          >
+            <div className="flex items-start gap-3">
+              <span className={`mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full text-sm font-semibold
+                ${toastType === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
+              >
+                {toastType === 'success' ? '✓' : '!'}
+              </span>
+              <div className="flex-1 text-sm text-gray-800">{toastMessage}</div>
+              <button
+                onClick={() => setToastVisible(false)}
+                className="text-gray-500 hover:text-gray-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded"
+                aria-label="Close notification"
+              >
+                ✕
+              </button>
+            </div>
+            {toastType === 'success' && (
+              <div className="mt-3 h-1 overflow-hidden rounded-full bg-green-100">
+                <div className="h-full w-full origin-left animate-[shrink_5s_linear_forwards] bg-green-500" />
+              </div>
+            )}
+            {toastType === 'error' && (
+              <div className="mt-3 h-1 overflow-hidden rounded-full bg-red-100">
+                <div className="h-full w-full origin-left animate-[shrink_6s_linear_forwards] bg-red-500" />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </main>
   );
 }
