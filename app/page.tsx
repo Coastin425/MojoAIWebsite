@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+/// <reference types="node" />
 import Image from 'next/image';
 
 export default function Home() {
@@ -10,6 +11,86 @@ export default function Home() {
     message: '',
   });
   const [formStatus, setFormStatus] = useState('');
+  // Waitlist modal state
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistPhone, setWaitlistPhone] = useState('');
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [waitlistSuccess, setWaitlistSuccess] = useState(false);
+  const [waitlistError, setWaitlistError] = useState<string | null>(null);
+
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const waitlistEndpoint = apiBase ? `${apiBase.replace(/\/$/, '')}/waitlist` : undefined;
+
+  const resetWaitlist = () => {
+    setWaitlistEmail('');
+    setWaitlistPhone('');
+    setWaitlistLoading(false);
+    setWaitlistSuccess(false);
+    setWaitlistError(null);
+  };
+
+  const handleJoinClick = () => {
+    resetWaitlist();
+    setWaitlistOpen(true);
+  };
+
+  const closeWaitlist = useCallback(() => {
+    setWaitlistOpen(false);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeWaitlist();
+    };
+    if (waitlistOpen) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [waitlistOpen, closeWaitlist]);
+
+  const submitWaitlist = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWaitlistLoading(true);
+    setWaitlistError(null);
+    setWaitlistSuccess(false);
+    try {
+      // Basic validation
+      if (!waitlistEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(waitlistEmail)) {
+        throw new Error('Please enter a valid email address.');
+      }
+      // Optional phone normalization (simple digits only)
+      const phoneNormalized = waitlistPhone.replace(/[^\d+]/g, '');
+      if (phoneNormalized && phoneNormalized.length < 8) {
+        throw new Error('Phone number seems too short.');
+      }
+
+      if (!waitlistEndpoint) {
+        throw new Error('Backend unavailable. Try again later.');
+      }
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch(waitlistEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: waitlistEmail, phone: phoneNormalized }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (!res.ok) {
+        let msg = 'Failed to join waitlist.';
+        try { msg = (await res.text()) || msg; } catch {}
+        throw new Error(msg);
+      }
+      setWaitlistSuccess(true);
+      setWaitlistLoading(false);
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        setWaitlistError('Request timed out. Please retry.');
+      } else {
+      setWaitlistError(err.message || 'Unexpected error');
+      }
+      setWaitlistLoading(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +132,11 @@ export default function Home() {
             MojoAI makes your thoughts actionable — just send a text.
           </p>
 
-          <button className="bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-semibold py-4 px-10 rounded-full text-lg shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 animate-glow">
+          <button
+            onClick={handleJoinClick}
+            className="bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-semibold py-4 px-10 rounded-full text-lg shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 animate-glow focus:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300"
+            aria-haspopup="dialog"
+          >
             Join the Waitlist
           </button>
 
@@ -63,6 +148,70 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Waitlist Modal */}
+      {waitlistOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+        >
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={closeWaitlist}
+            aria-hidden="true"
+          />
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-fade-in">
+            <button
+              onClick={closeWaitlist}
+              className="absolute top-3 right-3 rounded-full px-2 py-1 text-sm text-gray-500 hover:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+              aria-label="Close waitlist form"
+            >
+              ✕
+            </button>
+            <h3 className="text-2xl font-bold text-mojo-indigo mb-2">Join the Private Beta</h3>
+            <p className="text-sm text-gray-600 mb-6">Enter your email{` `}and optional phone number to receive an invite when we expand access.</p>
+            <form onSubmit={submitWaitlist} className="space-y-5">
+              <div>
+                <label htmlFor="waitlist-email" className="block text-sm font-medium text-mojo-indigo mb-1">Email</label>
+                <input
+                  id="waitlist-email"
+                  type="email"
+                  required
+                  value={waitlistEmail}
+                  onChange={e => setWaitlistEmail(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                  placeholder="you@example.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="waitlist-phone" className="block text-sm font-medium text-mojo-indigo mb-1">Phone (optional)</label>
+                <input
+                  id="waitlist-phone"
+                  type="tel"
+                  value={waitlistPhone}
+                  onChange={e => setWaitlistPhone(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                  placeholder="+1 555 123 4567"
+                />
+                <p className="mt-1 text-xs text-gray-400">Used for future SMS onboarding via Twilio.</p>
+              </div>
+              {waitlistError && <p className="text-sm text-red-600">{waitlistError}</p>}
+              {waitlistSuccess && <p className="text-sm text-green-600">You're on the list! 🎉</p>}
+              <button
+                type="submit"
+                disabled={waitlistLoading}
+                className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] focus:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300"
+              >
+                {waitlistLoading ? 'Submitting...' : (waitlistSuccess ? 'Done' : 'Join Waitlist')}
+              </button>
+              {!waitlistEndpoint && !waitlistSuccess && (
+                <p className="text-xs text-red-600">Backend not configured (set NEXT_PUBLIC_API_BASE_URL). No data sent.</p>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* About Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">

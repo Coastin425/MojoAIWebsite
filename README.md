@@ -89,6 +89,62 @@ git subtree push --prefix out origin gh-pages
 
 Simply upload the contents of the `out/` directory to any static hosting provider (Netlify, Vercel, Cloudflare Pages, etc.)
 
+## Developer API Integration
+
+The public website (this repository) is intentionally separated from the backend service ("Verbas") which powers AI and SMS processing.
+
+### Architecture Separation
+- **Frontend (this repo)**: Static Next.js site deployed via GitHub Pages / Porkbun.
+- **Backend (Verbas)**: Node.js/Express service deployed to Azure App Service.
+- **Communication**: Client-side fetch calls to the backend's public base URL.
+
+### Environment Variable
+Add to `.env.local` (or configure in GitHub Actions secrets):
+```
+NEXT_PUBLIC_API_BASE_URL=https://mojoaitest1-cbdgeke8abevate3.centralus-01.azurewebsites.net
+```
+
+### Waitlist Endpoint
+Frontend waitlist modal will POST to:
+```
+POST ${NEXT_PUBLIC_API_BASE_URL}/waitlist
+Body: { "email": "user@example.com", "phone": "+15551234567" }
+```
+If the backend is unreachable or the variable is missing, the UI will display a clear error and avoid sending any data.
+
+### Sample Curl Calls
+Waitlist:
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","phone":"+15551234567"}' \
+  "$NEXT_PUBLIC_API_BASE_URL/waitlist"
+```
+
+Twilio Inbound SMS (normally invoked by Twilio, signature omitted here):
+```bash
+curl -X POST \
+  -d "From=%2B15551234567&To=%2B19314655995&Body=Hello" \
+  "$NEXT_PUBLIC_API_BASE_URL/sms"
+```
+Note: The real Twilio webhook includes `X-Twilio-Signature` and uses `application/x-www-form-urlencoded`.
+
+### Security Notes
+- Do **not** expose Twilio or OpenAI credentials in frontend code.
+- Only public base URL and non-sensitive endpoints are referenced here.
+- Backend performs signature validation and logging.
+
+### Updating the Base URL
+Change `NEXT_PUBLIC_API_BASE_URL` and redeploy; the static export will embed the new value for subsequent client requests.
+
+### Failure Handling
+When the API is down or unreachable:
+- The waitlist modal shows a red message.
+- No data is transmitted.
+- User can retry later without losing page state.
+
+---
+
 ## Project Structure
 
 ```

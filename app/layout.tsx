@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   },
   verification: {
     other: {
-      // Placeholder for Twilio verification
-      "twilio-domain-verification": "placeholder-verification-code",
+      // Twilio domain verification token injected via NEXT_PUBLIC_TWILIO_VERIFICATION
+      "twilio-domain-verification": process.env.NEXT_PUBLIC_TWILIO_VERIFICATION || "placeholder-verification-code",
     },
   },
 };
