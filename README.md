@@ -100,34 +100,115 @@ The public website (this repository) is intentionally separated from the backend
 
 ### Environment Variable
 Add to `.env.local` (or configure in GitHub Actions secrets):
-```
+```bash
 NEXT_PUBLIC_API_BASE_URL=https://mojoaitest1-cbdgeke8abevate3.centralus-01.azurewebsites.net
 ```
 
-### Waitlist Endpoint
-Frontend waitlist modal will POST to:
-```
-POST ${NEXT_PUBLIC_API_BASE_URL}/waitlist
-Body: { "email": "user@example.com", "phone": "+15551234567" }
-```
-If the backend is unreachable or the variable is missing, the UI will display a clear error and avoid sending any data.
+### API Endpoints
 
-### Sample Curl Calls
-Waitlist:
+#### 1. Waitlist Endpoint
+Users can join the private beta waitlist through the modal form.
+
+**Endpoint**: `POST /waitlist`
+
+**Request**:
+```json
+{
+  "email": "user@example.com",
+  "phone": "+15551234567"
+}
+```
+
+**Response** (Success - 200 OK):
+```json
+{
+  "status": "ok",
+  "message": "Added to waitlist"
+}
+```
+
+**Response** (Error - 400/500):
+```json
+{
+  "error": "Invalid email format"
+}
+```
+
+**Example curl**:
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"email":"user@example.com","phone":"+15551234567"}' \
-  "$NEXT_PUBLIC_API_BASE_URL/waitlist"
+  https://mojoaitest1-cbdgeke8abevate3.centralus-01.azurewebsites.net/waitlist
 ```
 
-Twilio Inbound SMS (normally invoked by Twilio, signature omitted here):
+#### 2. Contact Form Endpoint
+Users can submit general inquiries through the contact form.
+
+**Endpoint**: `POST /contact`
+
+**Request**:
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "message": "I'd like to learn more about MojoAI."
+}
+```
+
+**Response** (Success - 200 OK):
+```json
+{
+  "status": "ok",
+  "message": "Message received"
+}
+```
+
+**Response** (Error - 400/500):
+```json
+{
+  "error": "All fields are required"
+}
+```
+
+**Example curl**:
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John Doe","email":"john@example.com","message":"I would like to learn more"}' \
+  https://mojoaitest1-cbdgeke8abevate3.centralus-01.azurewebsites.net/contact
+```
+
+#### 3. Twilio Inbound SMS
+Normally invoked by Twilio's webhook (not called by frontend).
+
+**Endpoint**: `POST /sms`
+
+**Request** (application/x-www-form-urlencoded):
+```
+From=%2B15551234567
+To=%2B19314655995
+Body=Hello
+```
+
+**Example curl**:
 ```bash
 curl -X POST \
   -d "From=%2B15551234567&To=%2B19314655995&Body=Hello" \
-  "$NEXT_PUBLIC_API_BASE_URL/sms"
+  https://mojoaitest1-cbdgeke8abevate3.centralus-01.azurewebsites.net/sms
 ```
-Note: The real Twilio webhook includes `X-Twilio-Signature` and uses `application/x-www-form-urlencoded`.
+
+Note: The real Twilio webhook includes `X-Twilio-Signature` for validation.
+
+### Frontend Implementation Details
+
+Both forms in the frontend:
+- Validate inputs before submission
+- Show loading state while requests are pending (button disabled)
+- Display success/error toasts with auto-dismiss timers
+- Log request/response to browser console for debugging
+- Handle timeouts (10s max) with AbortController
+- Gracefully degrade when `NEXT_PUBLIC_API_BASE_URL` is not set
 
 ### Security Notes
 - Do **not** expose Twilio or OpenAI credentials in frontend code.
@@ -135,13 +216,14 @@ Note: The real Twilio webhook includes `X-Twilio-Signature` and uses `applicatio
 - Backend performs signature validation and logging.
 
 ### Updating the Base URL
-Change `NEXT_PUBLIC_API_BASE_URL` and redeploy; the static export will embed the new value for subsequent client requests.
+Change `NEXT_PUBLIC_API_BASE_URL` in GitHub Actions workflow (`.github/workflows/deploy.yml`) and redeploy; the static export will embed the new value for subsequent client requests.
 
 ### Failure Handling
 When the API is down or unreachable:
-- The waitlist modal shows a red message.
-- No data is transmitted.
+- Forms show clear error messages.
+- No data is transmitted if env variable is missing.
 - User can retry later without losing page state.
+- Browser console logs include "calling backend..." then "success" or "error" for debugging.
 
 ---
 

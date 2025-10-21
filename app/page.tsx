@@ -11,6 +11,7 @@ export default function Home() {
     message: '',
   });
   const [formStatus, setFormStatus] = useState('');
+  const [contactLoading, setContactLoading] = useState(false);
   // Waitlist modal state
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const [waitlistEmail, setWaitlistEmail] = useState('');
@@ -25,6 +26,7 @@ export default function Home() {
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
   const waitlistEndpoint = apiBase ? `${apiBase.replace(/\/$/, '')}/waitlist` : undefined;
+  const contactEndpoint = apiBase ? `${apiBase.replace(/\/$/, '')}/contact` : undefined;
 
   const resetWaitlist = () => {
     setWaitlistEmail('');
@@ -56,6 +58,9 @@ export default function Home() {
     setWaitlistLoading(true);
     setWaitlistError(null);
     setWaitlistSuccess(false);
+    
+    console.log('🚀 Waitlist form: calling backend...');
+    
     try {
       // Basic validation
       if (!waitlistEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(waitlistEmail)) {
@@ -70,6 +75,9 @@ export default function Home() {
       if (!waitlistEndpoint) {
         throw new Error('Backend unavailable. Try again later.');
       }
+      
+      console.log(`📤 POST ${waitlistEndpoint}`, { email: waitlistEmail, phone: phoneNormalized });
+      
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 10000);
       const res = await fetch(waitlistEndpoint, {
@@ -79,11 +87,17 @@ export default function Home() {
         signal: controller.signal,
       });
       clearTimeout(timeout);
+      
       if (!res.ok) {
         let msg = 'Failed to join waitlist.';
         try { msg = (await res.text()) || msg; } catch {}
+        console.error('❌ Waitlist error:', msg);
         throw new Error(msg);
       }
+      
+      const data = await res.json().catch(() => ({}));
+      console.log('✅ Waitlist success:', data);
+      
       setWaitlistSuccess(true);
       setWaitlistLoading(false);
       // Show success toast
@@ -92,10 +106,12 @@ export default function Home() {
       setToastVisible(true);
       setTimeout(() => setToastVisible(false), 5000);
     } catch (err: any) {
+      console.error('❌ Waitlist error:', err);
+      
       if (err?.name === 'AbortError') {
         setWaitlistError('Request timed out. Please retry.');
       } else {
-      setWaitlistError(err.message || 'Unexpected error');
+        setWaitlistError(err.message || 'Unexpected error');
       }
       setWaitlistLoading(false);
       // Error toast (only if backend reachable attempt was made)
@@ -106,10 +122,76 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStatus('Thank you! We\'ll be in touch soon.');
-    setFormData({ name: '', email: '', message: '' });
+    setContactLoading(true);
+    setFormStatus('');
+    
+    console.log('🚀 Contact form: calling backend...');
+    
+    try {
+      // Validation
+      if (!formData.name || !formData.email || !formData.message) {
+        throw new Error('All fields are required.');
+      }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email)) {
+        throw new Error('Please enter a valid email address.');
+      }
+      
+      if (!contactEndpoint) {
+        throw new Error('Backend unavailable. Try again later.');
+      }
+      
+      console.log(`📤 POST ${contactEndpoint}`, formData);
+      
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch(contactEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      
+      if (!res.ok) {
+        let msg = 'Failed to send message.';
+        try { msg = (await res.text()) || msg; } catch {}
+        console.error('❌ Contact form error:', msg);
+        throw new Error(msg);
+      }
+      
+      const data = await res.json().catch(() => ({}));
+      console.log('✅ Contact form success:', data);
+      
+      setFormStatus('Thank you! We\'ll be in touch soon.');
+      setFormData({ name: '', email: '', message: '' });
+      setContactLoading(false);
+      
+      // Show success toast
+      setToastType('success');
+      setToastMessage('Message sent successfully! 📧');
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 5000);
+    } catch (err: any) {
+      console.error('❌ Contact form error:', err);
+      
+      setContactLoading(false);
+      const errorMsg = err?.name === 'AbortError' 
+        ? 'Request timed out. Please retry.' 
+        : (err?.message || 'Failed to send message.');
+      setFormStatus('');
+      
+      // Show error toast
+      setToastType('error');
+      setToastMessage(errorMsg);
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 6000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -373,13 +455,18 @@ export default function Home() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+              disabled={contactLoading}
+              className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
             >
-              Send Message
+              {contactLoading ? 'Sending...' : 'Send Message'}
             </button>
 
             {formStatus && (
               <p className="mt-4 text-center text-green-600 font-medium">{formStatus}</p>
+            )}
+            
+            {!contactEndpoint && (
+              <p className="mt-2 text-center text-xs text-red-600">Backend not configured (set NEXT_PUBLIC_API_BASE_URL).</p>
             )}
           </form>
         </div>
