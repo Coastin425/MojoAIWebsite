@@ -230,10 +230,10 @@ export default function Home() {
 
           <button
             onClick={handleJoinClick}
-            className="bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-semibold py-4 px-10 rounded-full text-lg shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 animate-glow focus:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300"
+            className="relative bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-semibold py-4 px-10 rounded-full text-lg shadow-2xl hover:shadow-purple-500/50 transition hover:scale-105 focus:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300"
             aria-haspopup="dialog"
           >
-            Join the Waitlist
+            <span className="block leading-none tracking-wide">Join the Waitlist</span>
           </button>
 
           {/* Scroll Indicator (simplified text only) */}
