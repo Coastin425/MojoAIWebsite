@@ -3,12 +3,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MojoAI - AI You Can Text",
-  description: "MojoAI makes your thoughts actionable — just send a text. Get reminders, notes, and everyday AI support.",
+  description: "MojoAI makes your thoughts actionable. Just send a text. Get reminders, notes, and everyday AI support.",
   keywords: ["AI", "text assistant", "reminders", "notes", "conversational AI", "MojoAI"],
   authors: [{ name: "MojoAI LLC" }],
   openGraph: {
     title: "MojoAI - AI You Can Text",
-    description: "MojoAI makes your thoughts actionable — just send a text.",
+  description: "MojoAI makes your thoughts actionable. Just send a text.",
     type: "website",
     locale: "en_US",
     siteName: "MojoAI",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "MojoAI - AI You Can Text",
-    description: "MojoAI makes your thoughts actionable — just send a text.",
+  description: "MojoAI makes your thoughts actionable. Just send a text.",
   },
   verification: {
     other: {

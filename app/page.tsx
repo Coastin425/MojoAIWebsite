@@ -220,12 +220,12 @@ export default function Home() {
             </div>
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6 animate-float">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white mb-6">
             AI You Can <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Text</span>
           </h1>
-          
+
           <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto font-light">
-            MojoAI makes your thoughts actionable — just send a text.
+            MojoAI makes your thoughts actionable. Just send a text.
           </p>
 
           <button
@@ -236,12 +236,9 @@ export default function Home() {
             Join the Waitlist
           </button>
 
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
-            <span className="text-white text-sm font-medium opacity-75 animate-pulse">Scroll to explore</span>
-            <div className="w-6 h-10 border-2 border-white rounded-full opacity-75 flex items-start justify-center p-1">
-              <div className="w-1.5 h-2 bg-white rounded-full animate-scroll-down"></div>
-            </div>
+          {/* Scroll Indicator (simplified text only) */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+            <span className="text-white/80 text-sm tracking-wide">Scroll to explore</span>
           </div>
         </div>
       </section>

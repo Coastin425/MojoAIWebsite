@@ -16,7 +16,6 @@ const config: Config = {
       animation: {
         'glow': 'glow 2s ease-in-out infinite alternate',
         'float': 'float 3s ease-in-out infinite',
-        'scroll-down': 'scroll-down 2s ease-in-out infinite',
       },
       keyframes: {
         glow: {
@@ -26,10 +25,6 @@ const config: Config = {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
-        },
-        'scroll-down': {
-          '0%': { transform: 'translateY(0)', opacity: '1' },
-          '100%': { transform: 'translateY(16px)', opacity: '0' },
         },
       },
     },

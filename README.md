@@ -1,7 +1,7 @@
 # MojoAIWebsite
 # MojoAI Website
 
-Modern, responsive landing page for MojoAI - an AI-powered conversational assistant that users can text for reminders, notes, and everyday support.
+Modern, responsive landing page for MojoAI, an AI powered conversational assistant that users can text for reminders, notes, and everyday support.
 
 ## Features
 
