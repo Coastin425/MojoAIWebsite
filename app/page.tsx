@@ -236,10 +236,6 @@ export default function Home() {
             <span className="block leading-none tracking-wide">Join the Waitlist</span>
           </button>
 
-          {/* Scroll Indicator (simplified text only) */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-            <span className="text-white/80 text-sm tracking-wide">Scroll to explore</span>
-          </div>
         </div>
       </section>
 
