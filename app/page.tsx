@@ -237,10 +237,11 @@ export default function Home() {
           </button>
 
           {/* Scroll Indicator */}
-          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <svg className="w-6 h-6 text-white opacity-75" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2">
+            <span className="text-white text-sm font-medium opacity-75 animate-pulse">Scroll to explore</span>
+            <div className="w-6 h-10 border-2 border-white rounded-full opacity-75 flex items-start justify-center p-1">
+              <div className="w-1.5 h-2 bg-white rounded-full animate-scroll-down"></div>
+            </div>
           </div>
         </div>
       </section>
@@ -321,7 +322,7 @@ export default function Home() {
           </p>
           <p className="text-lg text-gray-700 leading-relaxed mb-6">
             Currently in private beta, MojoAI leverages Twilio's robust messaging infrastructure and 
-            Azure OpenAI's cutting-edge language models to bring you a conversational assistant that 
+            Azure OpenAI's cutting edge language models to bring you a conversational assistant that 
             understands your needs and helps you stay organized.
           </p>
           <p className="text-lg text-gray-700 leading-relaxed">
@@ -346,7 +347,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-mojo-indigo mb-3">Text-Based AI</h3>
+              <h3 className="text-xl font-bold text-mojo-indigo mb-3">Text Based AI</h3>
               <p className="text-gray-600 leading-relaxed">
                 No apps to download. Just text like you normally would and get intelligent responses instantly.
               </p>
@@ -374,7 +375,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-mojo-indigo mb-3">Privacy First</h3>
               <p className="text-gray-600 leading-relaxed">
-                Your data is encrypted and secure. We prioritize your privacy with enterprise-grade protection.
+                Your data is encrypted and secure. We prioritize your privacy with enterprise grade protection.
               </p>
             </div>
 
@@ -387,7 +388,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-mojo-indigo mb-3">Powered by Azure OpenAI</h3>
               <p className="text-gray-600 leading-relaxed">
-                Leveraging cutting-edge AI technology for intelligent, context-aware conversations.
+                Leveraging cutting edge AI technology for intelligent, context aware conversations.
               </p>
             </div>
           </div>
