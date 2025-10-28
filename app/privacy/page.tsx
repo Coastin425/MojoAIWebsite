@@ -175,7 +175,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-bold text-mojo-indigo mb-4">8. Children's Privacy</h2>
             <p className="text-gray-700 leading-relaxed">
-              The Service is not intended for individuals under the age of 13. We do not knowingly collect personal information from children under 13. If we learn that we have collected information from a child under 13, we will promptly delete such information. If you believe a child under 13 has provided us with personal information, please contact us at <a href="mailto:hello@mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">hello@mojoai.work</a>.
+              The Service is not intended for individuals under the age of 13. We do not knowingly collect personal information from children under 13. If we learn that we have collected information from a child under 13, we will promptly delete such information. If you believe a child under 13 has provided us with personal information, please contact us at <a href="mailto:support@mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">support@mojoai.work</a>.
             </p>
           </section>
 
