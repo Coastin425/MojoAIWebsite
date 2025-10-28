@@ -138,7 +138,7 @@ export default function PrivacyPage() {
               <li><span className="font-semibold">Billing Information:</span> Retained as required by applicable law (typically 7 years for tax and accounting purposes).</li>
             </ul>
             <p className="text-gray-700 leading-relaxed mt-4">
-              You may request deletion of your data by contacting us at <a href="mailto:hello@mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">hello@mojoai.work</a>.
+              You may request deletion of your data by contacting us at <a href="mailto:support@mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">support@mojoai.work</a>.
             </p>
           </section>
 
@@ -156,7 +156,7 @@ export default function PrivacyPage() {
               <li><span className="font-semibold">Data Portability:</span> Request a copy of your data in a structured, machine-readable format.</li>
             </ul>
             <p className="text-gray-700 leading-relaxed mt-4">
-              To exercise these rights, contact us at <a href="mailto:hello@mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">hello@mojoai.work</a>. We will respond to your request within a reasonable timeframe as required by applicable law.
+              To exercise these rights, contact us at <a href="mailto:support@mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">support@mojoai.work</a>. We will respond to your request within a reasonable timeframe as required by applicable law.
             </p>
           </section>
 
@@ -213,7 +213,7 @@ export default function PrivacyPage() {
               <p className="text-gray-800 font-semibold mb-2">MojoAI LLC</p>
               <p className="text-gray-700">Atlanta, Georgia</p>
               <p className="text-gray-700">
-                Email: <a href="mailto:hello@mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">hello@mojoai.work</a>
+                Email: <a href="mailto:support@mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">support@mojoai.work</a>
               </p>
               <p className="text-gray-700">
                 Website: <a href="https://mojoai.work" className="text-mojo-violet hover:text-cyan-600 underline">https://mojoai.work</a>
