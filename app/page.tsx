@@ -504,6 +504,11 @@ export default function Home() {
                     hello@mojoai.work
                   </a>
                 </li>
+                <li>
+                  <a href="tel:+12175688575" className="hover:text-cyan-400 transition-colors">
+                    +1 217 568 8575
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
